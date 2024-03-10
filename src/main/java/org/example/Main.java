@@ -1,7 +1,5 @@
 package org.example;
 
-
-import org.example.auth.Auth;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -10,8 +8,6 @@ public class Main {
     public static void main(String[] args) {
 
         SpringApplication.run(Main.class, args);
-        Auth a = new Auth();
-        a.auth();
         /*
         System.out.println("<>===================Testing POST_CONTROLLER===================<>");
         PostsController pController = new PostsController();

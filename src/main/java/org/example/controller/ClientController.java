@@ -2,7 +2,6 @@ package org.example.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.model.db.Client;
-import org.example.model.db.Privilege;
 import org.example.service.ClientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class ClientController {
         return new ResponseEntity<>(clientService.readAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/client/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<List<Client>> readByClientId(@PathVariable Long id){
         return new ResponseEntity<>(clientService.readByPrivilegeId(id), HttpStatus.OK);
     }
