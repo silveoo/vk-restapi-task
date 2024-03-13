@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import lombok.AllArgsConstructor;
+import org.example.auth.Auth;
 import org.example.model.db.Client;
 import org.example.service.ClientService;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,15 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<Client>> readByClientId(@PathVariable Long id){
-        return new ResponseEntity<>(clientService.readByPrivilegeId(id), HttpStatus.OK);
+    public ResponseEntity<Client> readByClientId(@PathVariable Long id) {
+        Client client = clientService.readByPrivilegeId(id);
+        Auth auth = new Auth(client);
+        auth.test();
+        if (client != null) {
+            return new ResponseEntity<>(client, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
+
 }

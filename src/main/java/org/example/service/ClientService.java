@@ -2,8 +2,6 @@ package org.example.service;
 
 import lombok.AllArgsConstructor;
 import org.example.model.db.Client;
-import org.example.model.db.Privilege;
-import org.example.model.entity.User;
 import org.example.repository.ClientRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,7 @@ public class ClientService {
         return clientRepository.findById(id).orElseThrow(() -> new RuntimeException("Client not found - " + id));
     }
 
-    public List<Client> readByPrivilegeId(Long id){
+    public Client readByPrivilegeId(Long id){
         return clientRepository.findByPrivilegeId(id);
     }
 
