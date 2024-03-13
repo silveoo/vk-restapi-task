@@ -1,38 +1,44 @@
 package org.example.controller;
 
+
+
+
+import lombok.RequiredArgsConstructor;
 import org.example.model.db.Client;
 import org.example.model.entity.Album;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
 
+
+@Controller
+@RequiredArgsConstructor
 public class AlbumsController {
     RestTemplate rest = new RestTemplate();
     String url = "https://jsonplaceholder.typicode.com/albums";
+    private Client client;
+    private final AuditController auditController;
 
-    Client client;
-
-    public AlbumsController(Client client){
+    public void setClient(Client client){
         this.client = client;
     }
 
-    public void read(){ //GET ALL
-        if(client.getPrivilege().isAlbumsAllowed()) {
-            String response = rest.getForObject(url, String.class);
-            System.out.println(response);
-        }
-        else System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
-    }
-
     public void read(String id){ //GET
-        if(client.getPrivilege().isAlbumsAllowed()) {
+        boolean isAllowed = client.getPrivilege().isAlbumsAllowed();
+        if(isAllowed) {
         Album album = rest.getForObject(url + "/" + id, Album.class);
         System.out.println(album);
+        auditController.addAuditRecord(client.getId(), isAllowed, "albums.read");
         }
-        else System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+        else {
+            System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+            auditController.addAuditRecord(client.getId(), isAllowed, "albums.read");
+        }
     }
 
     public void postObject(long userId, long id, String title){ //POST
-        if(client.getPrivilege().isAlbumsAllowed()) {
+        boolean isAllowed = client.getPrivilege().isAlbumsAllowed();
+        if(isAllowed) {
         Album post = new Album();
         post.setUserId(userId);
         post.setId(id);
@@ -40,12 +46,17 @@ public class AlbumsController {
 
         Album postResponse = rest.postForObject(url, post, Album.class);
         System.out.println(postResponse);
+        auditController.addAuditRecord(client.getId(), isAllowed, "albums.post");
         }
-        else System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+        else {
+            System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+            auditController.addAuditRecord(client.getId(), isAllowed, "albums.post");
+        }
     }
 
     public void putObject(String id, long userId, long postId, String title) { //PUT
-        if(client.getPrivilege().isAlbumsAllowed()) {
+        boolean isAllowed = client.getPrivilege().isAlbumsAllowed();
+        if(isAllowed) {
         String paramUrl = url + "/{pId}";
         Album post = new Album();
         post.setUserId(userId);
@@ -54,15 +65,24 @@ public class AlbumsController {
 
         rest.put(paramUrl, post, id);
         System.out.println("Resource updated");
+        auditController.addAuditRecord(client.getId(), isAllowed, "albums.put");
         }
-        else System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+        else {
+            System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+            auditController.addAuditRecord(client.getId(), isAllowed, "albums.put");
+        }
     }
     public void delObject(String id){ //DELETE
-        if(client.getPrivilege().isAlbumsAllowed()) {
+        boolean isAllowed = client.getPrivilege().isAlbumsAllowed();
+        if(isAllowed) {
         String paramUrl = url + "/{pId}";
         rest.delete(paramUrl, id);
         System.out.println("Object deleted");
+        auditController.addAuditRecord(client.getId(), isAllowed, "albums.delete");
         }
-        else System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+        else {
+            System.out.println("ACCESSING ALBUMS IS NOT ALLOWED VIA " + client.getUsername());
+            auditController.addAuditRecord(client.getId(), isAllowed, "albums.delete");
+        }
     }
 }
